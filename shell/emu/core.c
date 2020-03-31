@@ -55,6 +55,9 @@ char GameName_emu[512];
 uint16_t WSButtonStatus;
 uint32_t rom_size, done = 0, wsc = 1;
 
+const int SCREEN_FPS = 75; 
+const int SCREEN_TICKS_PER_FRAME = 1000 / SCREEN_FPS;
+
 #ifdef FRAMESKIP
 static uint32_t Timer_Read(void) 
 {
@@ -285,7 +288,7 @@ void WS_reset(void)
 
 static void Run_Emulator(void)
 {
-	static int16_t sound_buf[0x10000];
+	static int16_t sound_buf[SOUND_OUTPUT_FREQUENCY*4];
 
 	EmulateSpecStruct spec = {0};
 	spec.SoundRate = SOUND_OUTPUT_FREQUENCY;
@@ -423,6 +426,7 @@ void SaveState(char* path, uint_fast8_t state)
 
 int main(int argc, char* argv[])
 {
+	long myTick, Tick;
 	uint32_t isloaded;
 	
     printf("Starting Oswan\n");
@@ -456,6 +460,7 @@ int main(int argc, char* argv[])
 	
 	done = 0;
     
+	myTick = 0;
     // get the game ready
     while (!done)
     {
@@ -464,6 +469,13 @@ int main(int argc, char* argv[])
 			case 0:
 				Run_Emulator();
 				Update_Video_Ingame();
+
+				Tick = SDL_GetTicks(); 
+				if ( (Tick) - (myTick) < SCREEN_TICKS_PER_FRAME * 1000)
+				{
+					 SDL_Delay(SCREEN_TICKS_PER_FRAME - ((Tick - myTick)/1000) - 1);
+				}
+				myTick = Tick;
 			break;
 			case 1:
 				Menu();

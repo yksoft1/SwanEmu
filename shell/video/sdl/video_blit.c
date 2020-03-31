@@ -160,8 +160,13 @@ void Update_Video_Ingame()
 		internal_width = INTERNAL_WSWAN_WIDTH;
 		internal_height = INTERNAL_WSWAN_HEIGHT;
 		source_graph = (uint16_t* restrict)wswan_vs->pixels;
+#ifndef _WIN32 
 		keep_aspect_width = 320;
 		keep_aspect_height = 206;
+#else
+		keep_aspect_width = INTERNAL_WSWAN_WIDTH*2;
+		keep_aspect_height = INTERNAL_WSWAN_HEIGHT*2;
+#endif
 	}
 	
 	SDL_LockSurface(sdl_screen);

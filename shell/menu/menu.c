@@ -278,7 +278,7 @@ static void Input_Remapping()
 					{
 						SDL_FillRect( backbuffer, NULL, 0 );
 						print_string("Please press button for mapping", TextWhite, TextBlue, 37, 108, backbuffer->pixels);
-						bitmap_scale(0,0,320,240,sdl_screen->w,sdl_screen->h,320,0,(uint16_t* restrict)backbuffer->pixels,(uint16_t* restrict)sdl_screen->pixels);
+						bitmap_scale(0,0,HOST_WIDTH_RESOLUTION,HOST_HEIGHT_RESOLUTION,sdl_screen->w,sdl_screen->h,HOST_WIDTH_RESOLUTION,0,(uint16_t* restrict)backbuffer->pixels,(uint16_t* restrict)sdl_screen->pixels);
 						
 						while (SDL_PollEvent(&Event))
 						{
@@ -353,7 +353,7 @@ static void Input_Remapping()
 		if (currentselection == 12) print_string(text, TextRed, 0, 165, 65+2, backbuffer->pixels);
 		else print_string(text, TextWhite, 0, 165, 65+2, backbuffer->pixels);
 		
-		bitmap_scale(0,0,320,240,sdl_screen->w,sdl_screen->h,320,0,(uint16_t* restrict)backbuffer->pixels,(uint16_t* restrict)sdl_screen->pixels);
+		bitmap_scale(0,0,HOST_WIDTH_RESOLUTION,HOST_HEIGHT_RESOLUTION,sdl_screen->w,sdl_screen->h,HOST_WIDTH_RESOLUTION,0,(uint16_t* restrict)backbuffer->pixels,(uint16_t* restrict)sdl_screen->pixels);
 		SDL_Flip(sdl_screen);
 	}
 	
@@ -567,7 +567,7 @@ void Menu()
             }
         }
 
-		bitmap_scale(0,0,320,240,sdl_screen->w,sdl_screen->h,320,0,(uint16_t* restrict)backbuffer->pixels,(uint16_t* restrict)sdl_screen->pixels);
+		bitmap_scale(0,0,HOST_WIDTH_RESOLUTION,HOST_HEIGHT_RESOLUTION,sdl_screen->w,sdl_screen->h,HOST_WIDTH_RESOLUTION,0,(uint16_t* restrict)backbuffer->pixels,(uint16_t* restrict)sdl_screen->pixels);
 		SDL_Flip(sdl_screen);
     }
     
