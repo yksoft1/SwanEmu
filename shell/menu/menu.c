@@ -8,6 +8,10 @@
 #include <time.h>
 #include <SDL/SDL.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include "scaler.h"
 #include "font_drawing.h"
 #include "sound_output.h"
@@ -607,16 +611,35 @@ static void Cleanup(void)
 
 void Init_Configuration()
 {
+#ifndef _WIN32
 	snprintf(home_path, sizeof(home_path), "%s/.swanemu", getenv("HOME"));
 	
 	snprintf(conf_path, sizeof(conf_path), "%s/conf", home_path);
 	snprintf(save_path, sizeof(save_path), "%s/sstates", home_path);
 	snprintf(eeprom_path, sizeof(eeprom_path), "%s/eeprom", home_path);
+#else
+	GetModuleFileName(NULL, home_path, 256);
+	{
+		int i;
+		for(i=255;i>0;i--)
+		{
+			if(home_path[i]=='\\')
+			{
+				home_path[i+1]='\0';
+				break;
+			}
+		}
+	}
 	
+	snprintf(conf_path, sizeof(conf_path), "%s\\conf", home_path);
+	snprintf(save_path, sizeof(save_path), "%s\\sstates", home_path);
+	snprintf(eeprom_path, sizeof(eeprom_path), "%s\\eeprom", home_path);
+#endif
 	/* We check first if folder does not exist. 
 	 * Let's only try to create it if so in order to decrease boot times.
 	 * */
 	
+#ifndef _WIN32
 	if (access( home_path, F_OK ) == -1)
 	{ 
 		mkdir(home_path, 0755);
@@ -636,7 +659,28 @@ void Init_Configuration()
 	{
 		mkdir(eeprom_path, 0755);
 	}
+#else
+	/*if (access( home_path, F_OK ) == -1)
+	{ 
+		mkdir(home_path);
+	}*/
 	
+	if (access( save_path, F_OK ) == -1)
+	{
+		mkdir(save_path);
+	}
+	
+	if (access( conf_path, F_OK ) == -1)
+	{
+		mkdir(conf_path);
+	}
+	
+	if (access( eeprom_path, F_OK ) == -1)
+	{
+		mkdir(eeprom_path);
+	}
+#endif
+
 	/* Load eeprom file if it exists */
 	EEPROM_Menu(1);
 	

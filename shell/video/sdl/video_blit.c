@@ -107,6 +107,17 @@ void Update_Video_Menu()
 	SDL_Flip(sdl_screen);
 }
 
+static const char *KEEP_ASPECT_FILENAME = "keep_aspect_ratio";
+
+static inline void set_keep_aspect_ratio(uint_fast8_t n)
+{
+	FILE *f = fopen(KEEP_ASPECT_FILENAME, "wb");
+	if (!f) return;
+	char c = n ? 'Y' : 'N';
+	fwrite(&c, 1, 1, f);
+	fclose(f);
+}
+
 void Set_Video_Menu_Quit()
 {
 	set_keep_aspect_ratio(option.fullscreen);

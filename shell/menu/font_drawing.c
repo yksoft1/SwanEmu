@@ -118,7 +118,11 @@ static void drawString(uint16_t* restrict buffer, uint32_t *x, uint32_t *y, uint
 	uint32_t i;
 	size_t size_font;
 
+#ifndef _WIN32
 	size_font = strnlen(str, (HOST_WIDTH_RESOLUTION/8)) + 1;
+#else
+	size_font = strlen(str) + 1;
+#endif
 	for(i = 0; i <  size_font; i++)
 		drawChar(buffer, x, y, _x, str[i], fc, olc);
 }

@@ -1,4 +1,6 @@
+#ifndef _WIN32
 #include <sys/ioctl.h>
+#endif
 #include <stdint.h>
 #include <fcntl.h>
 #include <unistd.h>
