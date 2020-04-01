@@ -1,8 +1,9 @@
 
+#include "video_blit.h"
 #include "scaler.h"
 
 /* alekmaul's scaler taken from mame4all */
-void bitmap_scale(uint32_t startx, uint32_t starty, uint32_t viswidth, uint32_t visheight, uint32_t newwidth, uint32_t newheight,uint32_t pitchsrc,uint32_t pitchdest, uint16_t* restrict src, uint16_t* restrict dst)
+void bitmap_scale(uint32_t startx, uint32_t starty, uint32_t viswidth, uint32_t visheight, uint32_t newwidth, uint32_t newheight,uint32_t pitchsrc,uint32_t pitchdest, PIXEL* restrict src, PIXEL* restrict dst)
 {
     uint32_t W,H,ix,iy,x,y;
     x=startx<<16;
@@ -14,7 +15,7 @@ void bitmap_scale(uint32_t startx, uint32_t starty, uint32_t viswidth, uint32_t 
 
     do 
     {
-        uint16_t* restrict buffer_mem=&src[(y>>16)*pitchsrc];
+        PIXEL* restrict buffer_mem=&src[(y>>16)*pitchsrc];
         W=newwidth; x=startx<<16;
         do 
         {

@@ -25,6 +25,11 @@
 #include <sys/time.h>
 #include <sys/types.h>
 
+
+#ifdef EMSCRIPTEN
+#include <emscripten.h>
+#endif
+
 #include <SDL/SDL.h>
 
 #include "mednafen.h"
@@ -55,8 +60,8 @@ char GameName_emu[512];
 uint16_t WSButtonStatus;
 uint32_t rom_size, done = 0, wsc = 1;
 
-const int SCREEN_FPS = 75; 
-const int SCREEN_TICKS_PER_FRAME = 1000 / SCREEN_FPS;
+#define SCREEN_FPS 75 
+#define SCREEN_TICKS_PER_FRAME  (1000 / SCREEN_FPS)
 
 #ifdef FRAMESKIP
 static uint32_t Timer_Read(void) 
@@ -110,9 +115,9 @@ static void Emulate(EmulateSpecStruct *espec)
 #ifdef FRAMESKIP
 	SkipCnt++;
 	if (SkipCnt > 4) SkipCnt = 0;
-	while(!wsExecuteLine((uint16_t* restrict)Draw_to_Virtual_Screen, width_of_surface, TblSkip[FrameSkip][SkipCnt] ));
+	while(!wsExecuteLine((PIXEL* restrict)Draw_to_Virtual_Screen, width_of_surface, TblSkip[FrameSkip][SkipCnt] ));
 #else
-	while(!wsExecuteLine((uint16_t* restrict)Draw_to_Virtual_Screen, width_of_surface, 0 ));
+	while(!wsExecuteLine((PIXEL* restrict)Draw_to_Virtual_Screen, width_of_surface, 0 ));
 #endif
 
 	UNLOCK_VIDEO
@@ -464,6 +469,9 @@ int main(int argc, char* argv[])
     // get the game ready
     while (!done)
     {
+#ifdef EMSCRIPTEN
+ 		emscripten_sleep_with_yield(0);
+#endif
 		switch(emulator_state)
 		{
 			case 0:
@@ -473,7 +481,11 @@ int main(int argc, char* argv[])
 				Tick = SDL_GetTicks(); 
 				if ( (Tick) - (myTick) < SCREEN_TICKS_PER_FRAME * 1000)
 				{
-					 SDL_Delay(SCREEN_TICKS_PER_FRAME - ((Tick - myTick)/1000) - 1);
+#ifdef EMSCRIPTEN
+					emscripten_sleep_with_yield(SCREEN_TICKS_PER_FRAME - ((Tick - myTick)/1000));
+#else
+					SDL_Delay(SCREEN_TICKS_PER_FRAME - ((Tick - myTick)/1000) - 1);
+#endif
 				}
 				myTick = Tick;
 			break;

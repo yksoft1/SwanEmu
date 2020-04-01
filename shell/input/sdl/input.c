@@ -40,8 +40,13 @@ int32_t update_input(void)
 		axis_rotate[3] = 3;
 	}
 #endif
+
+#ifdef EMSCRIPTEN
+	keys = SDL_GetKeyboardState(NULL);
+#else
 	keys = SDL_GetKeyState(NULL);
-	
+#endif
+
 	while (SDL_PollEvent(&event))
 	{
 		switch(event.type)

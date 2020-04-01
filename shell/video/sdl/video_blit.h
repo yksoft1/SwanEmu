@@ -3,7 +3,7 @@
 
 #include <SDL/SDL.h>
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(EMSCRIPTEN)
 #define HOST_WIDTH_RESOLUTION 320
 #define HOST_HEIGHT_RESOLUTION 240
 #else
@@ -13,6 +13,14 @@
 
 #define INTERNAL_WSWAN_WIDTH 224
 #define INTERNAL_WSWAN_HEIGHT 144
+
+#ifndef EMSCRIPTEN
+#define SCREEN_BPP 16
+#define PIXEL uint16_t
+#else
+#define SCREEN_BPP 32
+#define PIXEL uint32_t
+#endif
 
 #define LOCK_VIDEO SDL_LockSurface(sdl_screen);
 #define UNLOCK_VIDEO SDL_UnlockSurface(sdl_screen);

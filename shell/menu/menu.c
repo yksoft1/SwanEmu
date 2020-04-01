@@ -8,14 +8,18 @@
 #include <time.h>
 #include <SDL/SDL.h>
 
+#ifdef EMSCRIPTEN
+#include <emscripten.h>
+#endif
+
 #ifdef _WIN32
 #include <windows.h>
 #endif
 
-#include "scaler.h"
 #include "font_drawing.h"
 #include "sound_output.h"
 #include "video_blit.h"
+#include "scaler.h"
 #include "config.h"
 #include "menu.h"
 
@@ -75,35 +79,40 @@ static void config_load()
 	else
 	{
 		/* Default mapping for Horizontal */
-		option.config_buttons[0][0] = 273;
-		option.config_buttons[0][1] = 275;
-		option.config_buttons[0][2] = 274;
-		option.config_buttons[0][3] = 276;
-		
+
+		option.config_buttons[0][0] = SDLK_UP;
+		option.config_buttons[0][1] = SDLK_RIGHT;
+		option.config_buttons[0][2] = SDLK_DOWN;
+		option.config_buttons[0][3] = SDLK_LEFT;
+
 		option.config_buttons[0][4] = 0;
 		option.config_buttons[0][5] = 0;
 		option.config_buttons[0][6] = 0;
 		option.config_buttons[0][7] = 0;
 		
 		option.config_buttons[0][8] = 1;
-		option.config_buttons[0][9] = 13;
+		option.config_buttons[0][9] = SDLK_RETURN;
 				
-		option.config_buttons[0][10] = 306;
-		option.config_buttons[0][11] = 308;
-		
+#ifndef EMSCRIPTEN
+		option.config_buttons[0][10] = SDLK_LCTRL;
+		option.config_buttons[0][11] = SDLK_LALT;
+#else
+		option.config_buttons[0][10] = SDLK_x;
+		option.config_buttons[0][11] = SDLK_z;		
+#endif
 		/* Default mapping for Vertical mode */
-		option.config_buttons[1][0] = 306;
-		option.config_buttons[1][1] = 308;
-		option.config_buttons[1][2] = 304;
-		option.config_buttons[1][3] = 32;
+		option.config_buttons[1][0] = SDLK_LCTRL;
+		option.config_buttons[1][1] = SDLK_LALT;
+		option.config_buttons[1][2] = SDLK_LSHIFT;
+		option.config_buttons[1][3] = SDLK_SPACE;
 		
-		option.config_buttons[1][4] = 276;
-		option.config_buttons[1][5] = 273;
-		option.config_buttons[1][6] = 275;
-		option.config_buttons[1][7] = 274;
+		option.config_buttons[1][4] = SDLK_LEFT;
+		option.config_buttons[1][5] = SDLK_UP;
+		option.config_buttons[1][6] = SDLK_RIGHT;
+		option.config_buttons[1][7] = SDLK_DOWN;
 		
 		option.config_buttons[1][8] = 1;
-		option.config_buttons[1][9] = 13;
+		option.config_buttons[1][9] = SDLK_RETURN;
 				
 		option.config_buttons[1][10] = 0;
 		option.config_buttons[1][11] = 0;
@@ -269,7 +278,11 @@ static void Input_Remapping()
 
         if (pressed)
         {
+#ifdef EMSCRIPTEN
+			emscripten_sleep_with_yield(1);
+#else
 			SDL_Delay(1);
+#endif
             switch(currentselection)
             {
                 default:
@@ -278,7 +291,7 @@ static void Input_Remapping()
 					{
 						SDL_FillRect( backbuffer, NULL, 0 );
 						print_string("Please press button for mapping", TextWhite, TextBlue, 37, 108, backbuffer->pixels);
-						bitmap_scale(0,0,HOST_WIDTH_RESOLUTION,HOST_HEIGHT_RESOLUTION,sdl_screen->w,sdl_screen->h,HOST_WIDTH_RESOLUTION,0,(uint16_t* restrict)backbuffer->pixels,(uint16_t* restrict)sdl_screen->pixels);
+						bitmap_scale(0,0,HOST_WIDTH_RESOLUTION,HOST_HEIGHT_RESOLUTION,sdl_screen->w,sdl_screen->h,HOST_WIDTH_RESOLUTION,0,(PIXEL* restrict)backbuffer->pixels,(PIXEL* restrict)sdl_screen->pixels);
 						
 						while (SDL_PollEvent(&Event))
 						{
@@ -353,7 +366,7 @@ static void Input_Remapping()
 		if (currentselection == 12) print_string(text, TextRed, 0, 165, 65+2, backbuffer->pixels);
 		else print_string(text, TextWhite, 0, 165, 65+2, backbuffer->pixels);
 		
-		bitmap_scale(0,0,HOST_WIDTH_RESOLUTION,HOST_HEIGHT_RESOLUTION,sdl_screen->w,sdl_screen->h,HOST_WIDTH_RESOLUTION,0,(uint16_t* restrict)backbuffer->pixels,(uint16_t* restrict)sdl_screen->pixels);
+		bitmap_scale(0,0,HOST_WIDTH_RESOLUTION,HOST_HEIGHT_RESOLUTION,sdl_screen->w,sdl_screen->h,HOST_WIDTH_RESOLUTION,0,(PIXEL* restrict)backbuffer->pixels,(PIXEL* restrict)sdl_screen->pixels);
 		SDL_Flip(sdl_screen);
 	}
 	
@@ -567,7 +580,7 @@ void Menu()
             }
         }
 
-		bitmap_scale(0,0,HOST_WIDTH_RESOLUTION,HOST_HEIGHT_RESOLUTION,sdl_screen->w,sdl_screen->h,HOST_WIDTH_RESOLUTION,0,(uint16_t* restrict)backbuffer->pixels,(uint16_t* restrict)sdl_screen->pixels);
+		bitmap_scale(0,0,HOST_WIDTH_RESOLUTION,HOST_HEIGHT_RESOLUTION,sdl_screen->w,sdl_screen->h,HOST_WIDTH_RESOLUTION,0,(PIXEL* restrict)backbuffer->pixels,(PIXEL* restrict)sdl_screen->pixels);
 		SDL_Flip(sdl_screen);
     }
     

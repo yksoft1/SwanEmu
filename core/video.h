@@ -51,5 +51,4 @@ typedef struct
    int32_t pitch;
 } MDFN_Surface;
 
-
 #endif

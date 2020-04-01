@@ -29,8 +29,8 @@ static uint32_t wsMonoPal[16][4];
 static uint32_t wsColors[8];
 static uint32_t wsCols[16][16];
 
-static uint16_t ColorMapG[16];
-static uint16_t ColorMap[4096];
+static WPIXEL ColorMapG[16];
+static WPIXEL ColorMap[4096];
 static uint32_t LayerEnabled;
 
 /* Current scanline */
@@ -269,7 +269,7 @@ uint8_t WSwan_GfxRead(uint32_t A)
 	return 0;
 }
 
-uint32_t wsExecuteLine(uint16_t* restrict pixels, uint8_t pitch, const uint32_t skip)
+uint32_t wsExecuteLine(WPIXEL* restrict pixels, uint8_t pitch, const uint32_t skip)
 {
 	uint32_t ret = false;
 	
@@ -349,18 +349,26 @@ void WSwan_SetPixelFormat(void)
 		{
 			for (b = 0; b < 16; b++)
 			{
+#ifdef RGB16
 				ColorMap[(r << 8) | (g << 4) | (b << 0)] = MAKECOLOR((r * 17), (g * 17), (b * 17), 0); //(neo_r << rs) | (neo_g << gs) | (neo_b << bs);
+#else
+				ColorMap[(r << 8) | (g << 4) | (b << 0)] = ( ((b*16)*0x10000) + ((g*16)*0x100) + (r*16));
+#endif			
 			}
 		}
 	}
 
 	for (i = 0; i < 16; i++)
 	{
+#ifdef RGB16
 		ColorMapG[i] = MAKECOLOR((i * 17), (i * 17), (i * 17), 0); //(neo_r << rs) | (neo_g << gs) | (neo_b << bs);
+#else
+		ColorMapG[i] = 0x00111111 * i;
+#endif
 	}
 }
 
-void wsScanline(uint16_t* restrict target)
+void wsScanline(WPIXEL* restrict target)
 {
 	uint32_t start_tile_n,map_a,startindex,adrbuf,b1,b2,j,t,l;
 	uint8_t b_bg[256];
